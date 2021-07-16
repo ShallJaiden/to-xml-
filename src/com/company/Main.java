@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
-//TODO mapping zone and capacity
 
 public class Main {
 
@@ -15,18 +14,22 @@ public class Main {
     Map<IP_Port_Pair, Integer> serverIndexMap =  new LinkedHashMap<>();
     Map<String, Integer> capacityMap = new LinkedHashMap<>();
     Stack<IP_Port_Pair> serverStack = new Stack<>();
+    Map<String, String> dnsMap = new HashMap<>();
+    Map<String, String> validation = new HashMap<>();
     int count = 1;
 
     public static void main(String[] args) {
 
         Main main = new Main();
         main.fileHashing();
+        main.DNS();
         main.toXml();
+        main.toXmlBeta();
 
     }
 
     private void fileHashing() {
-        StringBuilder contentBuilder = getStringBuilder();
+        StringBuilder contentBuilder = getStringBuilder("D:\\shitloads\\src\\demo.txt");
         String content =  contentBuilder.toString();
 
 
@@ -53,6 +56,27 @@ public class Main {
 
     }
 
+    public void DNS() {
+        StringBuilder contentBuilder = getStringBuilder("D:\\shitloads\\src\\DNS.txt");
+        String content =  contentBuilder.toString();
+
+
+        String[] str = content.split("\n");
+
+
+
+        for (String s : str){
+            String[] aLine = s.split("\\s+");
+            dnsMap.put(aLine[0],aLine[1]);
+            validation.put(aLine[0],aLine[2]);
+
+
+
+        }
+
+
+    }
+
     private int calculateCapacity(Current_Max_Pair capPair) {
         double ratio = Double.parseDouble(capPair.currentUser) / Double.parseDouble(capPair.maxUser);
         if (ratio >=0 && ratio < 0.1) return 1;
@@ -65,9 +89,9 @@ public class Main {
 
     }
 
-    private static StringBuilder getStringBuilder() {
+    private static StringBuilder getStringBuilder(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
-        try (BufferedReader br = new BufferedReader(new FileReader("D:\\shitloads\\src\\demo.txt")))
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath)))
         {
 
             String sCurrentLine;
@@ -87,6 +111,23 @@ public class Main {
         System.out.print("<root>\n");
         System.out.print("\t\t<servers>\n");
         set.forEach(i -> System.out.print("\t\t\t<server>" + i.ip + "/" + i.port + "</server>\n"));
+        System.out.print("\t\t</servers>\n");
+        System.out.print("\t\t<zones>\n");
+        capacityMap.forEach((k, v) -> System.out.print("\t\t\t<zone name=“" + k + "” serverIndex=\"" + serverIndexMap.get(serverMap.get(k)) + "\" capacity=\"" + v + "\"/>\n"));
+        System.out.print("\t\t</zones>\n");
+        System.out.print("</root>\n");
+    }
+
+    public void toXmlBeta() {
+        System.out.print("<root>\n");
+        System.out.print("\t\t<servers>\n");
+        for (IP_Port_Pair pair : set) {
+            if (dnsMap.containsKey(pair.ip) && validation.get(pair.ip).equals("1") ) {
+                System.out.print("\t\t\t<server>" + dnsMap.get(pair.ip) + "/" + pair.port + "</server>\n");
+            }
+            else
+                System.out.print("\t\t\t<server>" + pair.ip + "/" + pair.port + "</server>\n");
+        }
         System.out.print("\t\t</servers>\n");
         System.out.print("\t\t<zones>\n");
         capacityMap.forEach((k, v) -> System.out.print("\t\t\t<zone name=“" + k + "” serverIndex=\"" + serverIndexMap.get(serverMap.get(k)) + "\" capacity=\"" + v + "\"/>\n"));
