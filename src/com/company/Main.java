@@ -14,7 +14,7 @@ public class Main {
     Map<String, String> dnsMap = new HashMap<>();
     Map<String, String> validation = new HashMap<>();
     List<Zone> zoneList = new ArrayList<>();
-    int count = 1;
+   
 
     public static void main(String[] args) {
 
