@@ -3,11 +3,16 @@ package com.company;
 public class IP_Port_Pair {
     protected String ip;
     protected String  port;
+    protected int index;
 
 
     public IP_Port_Pair(String ip, String port) {
         this.ip = ip;
         this.port = port;
+    }
+
+    public void setIndex(int idx) {
+        this.index = idx;
     }
 
 
